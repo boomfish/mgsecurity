@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans>
+	
+<!-- This is your Model-Glue configuration -->
+<bean id="modelglue.modelGlueConfiguration" class="ModelGlue.gesture.configuration.ModelGlueConfiguration">
+
+	<!-- Be sure to change these to false when you go to production! -->
+	<property name="reload"><value>false</value></property>
+	<property name="debug"><value>true</value></property>
+	
+	<!-- Name of the URL variable that states which event-handler to run -->
+	<property name="eventValue"><value>event</value></property>
+	<!-- Default event-handler -->
+	<property name="defaultEvent"><value>page.index</value></property>
+	<!-- Execute this event when the requested event is missing. Won't work if generationEnabled=true and in development mode! -->
+	<property name="missingEvent"><value>page.missing</value></property>
+	<!-- Execute this event when an error occurs. -->
+	<property name="defaultExceptionHandler"><value>page.error</value></property>
+	
+	<!-- Controls reloading -->
+	<property name="reloadPassword"><value>true</value></property>
+	<property name="reloadKey"><value>init</value></property>
+
+	<!-- Where to find necessary files -->
+	<property name="configurationPath"><value>config/ModelGlue.xml</value></property>
+	<property name="applicationMapping"><value>/mgLoginExample</value></property>
+	<property name="viewMappings"><value>/mgLoginExample/views</value></property>
+	<property name="helperMappings"><value>/mgLoginExample/helpers</value></property>
+		
+	<!-- Set the default cache timeout in seconds -->
+	<property name="defaultCacheTimeout"><value>60</value></property>	
+		
+	<!-- See documentation or ModelGlueConfiguration.cfc for additional options. -->
+</bean>
+	
+<!-- 
+	If you need your own configuration values (datasource names, etc), put them here.
+	
+	See modelgluesamples/simpleconfiguration/controller/Controller for an example of how to get to the values.
+	
+	Advanced users who are used to ColdSpring will probably delete this bean in favor of their own approach.
+ -->
+<bean id="modelglue.applicationConfiguration" class="ModelGlue.Bean.CommonBeans.SimpleConfig">
+	<property name="config">
+		<map>
+			<entry key="myDatasource"><value>myDatasource</value></entry>
+		</map>
+	</property>
+</bean>
+
+<!-- Put definitions for your own beans and services here -->
+
+<bean id="authenticator" class="mgLoginExample.model.security.PasswordFileAuthenticator" init-method="load">
+    <!-- Set the passwordFilePath property to a path to your password file -->
+    <property name="passwordFilePath"><value>C:/ColdFusion9/wwwroot/mgsecurity/mgLoginExample/config/passwd.txt</value></property>
+</bean>
+
+<bean id="loginSessionManager" class="mgLoginExample.model.security.LoginSessionManager">
+    <property name="idleTimeout"><value>300</value></property>
+</bean>
+
+</beans>

@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- ModelGlue.xml for mock application events (front-end development) -->
+<modelglue>
+
+	<controllers>
+		<!-- Mocking controller generates mock data for views -->
+        <controller id="MockingController" type="mgLoginExample.controller.dev.MockingController">
+           <message-listener message="mockValidation" />
+           <message-listener message="mockValues" />
+        </controller>
+	</controllers>
+			
+<event-handlers>
+	
+    <!-- Mock page events -->
+	
+	<event-handler name="mock.page.index">
+		<broadcasts />
+		<results>
+			<result do="mock.layout.default" />
+		</results>
+		<views>
+			<view name="body" template="pages/index.cfm" />
+		</views>
+	</event-handler>
+	
+    <event-handler name="mock.page.welcome">
+        <broadcasts />
+        <results>
+            <result do="mock.layout.default" />
+        </results>
+        <views>
+            <view name="topNav" template="nav/topWelcome.cfm" />
+            <view name="body"   template="pages/index.cfm" />
+        </views>
+    </event-handler>
+
+    <event-handler name="mock.page.manager">
+        <broadcasts />
+        <results>
+            <result do="mock.layout.default" />
+        </results>
+        <views>
+            <view name="body" template="pages/manager.cfm" />
+        </views>
+    </event-handler>
+
+    <event-handler name="mock.page.admin">
+        <broadcasts />
+        <results>
+            <result do="mock.layout.default" />
+        </results>
+        <views>
+            <view name="body" template="pages/admin.cfm" />
+        </views>
+    </event-handler>
+	
+	<!-- Mock security events -->
+
+        <!-- Event to display the login form -->
+        <event-handler name="mock.security.loginForm">
+            <broadcasts>
+            </broadcasts>
+            <results>
+                <result do="mock.layout.default" />
+            </results>
+            <views>
+                <view name="body" template="security/loginForm.cfm" append="true">
+                    <value overwrite="true" name="xe.login" value="mock.security.loginSuccess" />
+                    <!-- <value overwrite="true" name="xe.login" value="mock.security.loginFailed" /> -->
+                </view>
+            </views>
+        </event-handler>
+                
+        <!-- Event to simulate a login failure from a missing login name -->
+        <event-handler name="mock.security.loginFailed.loginNameMissing">
+            <broadcasts>
+                <message name="mockValidation">
+                	<argument name="validation" value="LoginValidation" />
+                    <argument name="loginName" value="The Login name field is required but was not provided." />
+            	</message>
+            </broadcasts>
+            <results>
+                <!-- Go back to the login form -->
+                <result do="mock.security.loginForm" />
+            </results>
+        </event-handler>
+
+        <!-- Event to simulate a login failure from invalid credentials -->
+        <event-handler name="mock.security.loginFailed.badCredentials">
+            <broadcasts>
+                <message name="mockValues">
+                    <argument name="loginName" value="paul" />
+                    <argument name="password" value="foobar" />
+                </message>
+                <message name="mockValidation">
+                    <argument name="validation" value="LoginValidation" />
+                    <argument name="password" value="Your login name and/or password is incorrect." />
+                </message>
+            </broadcasts>
+            <results>
+                <!-- Go back to the login form -->
+                <result do="mock.security.loginForm" />
+            </results>
+        </event-handler>
+        
+        <!-- Event to simulate a successful login -->
+        <event-handler name="mock.security.loginSuccess">
+            <broadcasts>
+            </broadcasts>
+            <results>
+                <result do="mock.page.welcome" redirect="true" />
+            </results>
+        </event-handler>
+
+        <!-- Event to simulate unauthorized access -->
+        <event-handler name="mock.security.notAuthorized">
+            <results>
+                <result do="mock.layout.default" />
+            </results>
+            <views>
+                <include name="body" template="security/notAuthorized.cfm" />
+            </views>
+        </event-handler>
+
+        <!-- Event to simulate an unauthenticated user accessing a secured page -->
+        <event-handler name="mock.security.notLoggedIn">
+            <results>
+                <result do="mock.layout.default" />
+            </results>
+            <views>
+                <include name="body" template="security/notLoggedIn.cfm" />
+            </views>
+		</event-handler>
+ 	
+	<!-- Mock layouts -->
+
+    <event-handler name="mock.layout.default" access="private">
+        <views>
+            <view name="bottomNav" template="nav/bottomDefault.cfm">
+            	<value overwrite="true" name="xe.home"    value="mock.page.index" />
+                <value overwrite="true" name="xe.manager" value="mock.page.manager" />
+                <value overwrite="true" name="xe.admin"   value="mock.page.admin" />
+                <value overwrite="true" name="xe.logout"  value="mock.security.logout" />
+                <value overwrite="true" name="xe.login"   value="mock.security.loginForm" />
+            </view>
+			<!-- Add re-init link for debugging -->
+			<view name="bottomNav" template="dev/initLink.cfm" append="true" />
+            <view name="main" template="templates/main.cfm" />
+        </views>
+    </event-handler>
+
+	
+</event-handlers>
+	
+</modelglue>
+

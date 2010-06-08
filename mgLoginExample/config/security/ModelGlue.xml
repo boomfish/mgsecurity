@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- ModelGlue.xml for security events and event types -->
+<modelglue>
+	<controllers>
+		<!-- This is a standard controller for integrating access control into your application -->
+		<controller name="SecurityController" type="mgLoginExample.controller.SecurityController">
+			<message-listener message="needsAuthentication" function="login" />
+			<message-listener message="needsAuthorization" function="checkAccess" />
+			<message-listener message="needsLogout" function="logout" />
+		</controller>
+	</controllers>
+
+    <event-types>
+
+        <event-type name="generalSecuredEvent">
+            <before>
+                <broadcasts>
+                     <message name="needsAuthorization">
+                         <argument name="authorizedRoles" value="*" />
+                     </message>
+                </broadcasts>
+                <results>
+                    <result name="NotLoggedIn" do="security.notLoggedIn" redirect="true" />
+                    <result name="NotAuthorized" do="security.notAuthorized" redirect="true" />
+                </results>
+            </before>
+        </event-type>
+
+        <event-type name="managerSecuredEvent">
+            <before>
+                <broadcasts>
+                     <message name="needsAuthorization">
+                         <argument name="authorizedRoles" value="manager" />
+                     </message>
+                </broadcasts>
+                <results>
+                    <result name="NotLoggedIn" do="security.notLoggedIn" redirect="true" />
+                    <result name="NotAuthorized" do="security.notAuthorized" redirect="true" />
+                </results>
+            </before>
+        </event-type>
+
+        <event-type name="adminSecuredEvent">
+            <before>
+                <broadcasts>
+                     <message name="needsAuthorization">
+                         <argument name="authorizedRoles" value="admin" />
+                     </message>
+                </broadcasts>
+                <results>
+                    <result name="NotLoggedIn" do="security.notLoggedIn" redirect="true" />
+                    <result name="NotAuthorized" do="security.notAuthorized" redirect="true" />
+                </results>
+            </before>
+        </event-type>
+
+    </event-types>
+
+	<event-handlers>
+
+		<!-- Event to display the login form -->
+		<event-handler name="security.loginForm">
+			<views>
+				<view name="body" template="security/loginForm.cfm" append="true">
+					<value overwrite="true" name="xe.login" value="security.login" />
+				</view>
+			</views>
+			<results>
+				<result do="layout.default" />
+			</results>
+		</event-handler>
+		
+		<!-- Event to process a login request -->
+		<event-handler name="security.login">
+			<broadcasts>
+				<!-- This message requests for a login/password check -->
+				<message name="needsAuthentication" />
+			</broadcasts>
+			<results>
+				<result name="LoginSuccess" do="security.loginSuccess" />
+				<result name="LoginFailed" do="security.loginFailed" />
+			</results>
+		</event-handler>
+		
+		<!-- Event to process a logout request or a login session timeout -->
+		<event-handler name="security.logout">
+			<broadcasts>
+				<!-- This message notifies that a logout is about to occur -->
+				<!-- This makes a good point to back up important unsaved session information -->
+				<message name="onBeforeLogout" />
+				<!-- This message requests the logout to be performed -->
+				<message name="needsLogout" />
+				<!-- This message notifies that a logout has occurred -->
+				<message name="onAfterLogout" />
+			</broadcasts>
+			<results>
+				<!-- Go to the main page (which may or may not need authorization) -->
+				<result do="page.index" />
+			</results>
+		</event-handler>
+		
+		<!-- Event to handle a login failure -->
+		<event-handler name="security.loginFailed" access="private">
+			<broadcasts>
+				<!-- This message notifies that a login has failed -->
+				<!-- This may be a good point to lock the user out after a set number of failures -->
+				<message name="onLoginFailure" />
+			</broadcasts>
+			<results>
+				<!-- Go back to the login form -->
+				<result do="security.loginForm" />
+			</results>
+		</event-handler>
+		
+		<!-- Event to handle a successful login -->
+		<event-handler name="security.loginSuccess" access="private">
+			<broadcasts>
+				<!-- This message notifies that a login has succeeded -->
+				<!-- This makes a good point to check how soon the user's password will expire -->
+				<message name="onLogin" />
+			</broadcasts>
+			<results>
+				<result do="page.welcome" redirect="true" />
+			</results>
+		</event-handler>
+
+		<!-- Standard event for an attempt at unauthorized access -->
+		<event-handler name="security.notAuthorized">
+            <results>
+                <result do="layout.default" />
+            </results>
+			<views>
+				<include name="body" template="security/notAuthorized.cfm" />
+			</views>
+		</event-handler>
+
+        <event-handler name="security.notLoggedIn">
+            <results>
+                <result do="layout.default" />
+            </results>
+            <views>
+                <include name="body" template="security/notLoggedIn.cfm" />
+            </views>
+        </event-handler>
+
+	</event-handlers>
+</modelglue>

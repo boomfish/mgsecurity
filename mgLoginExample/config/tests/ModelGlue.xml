@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- ModelGlue.xml for test application events (back-end development) -->
+<modelglue>
+
+	<controllers>
+	   <!-- For now we assume that the mocking controller is being included elsewhere -->
+	</controllers>
+
+    <event-types>
+        <event-type name="test.securityEvent">
+            <!-- We must reset the login state before testing security events -->
+            <before>
+                <broadcasts>
+                     <message name="needsLogout" />
+                </broadcasts>
+            </before>
+        </event-type>
+	</event-types>
+		
+	<event-handlers>
+
+        <!-- Test events -->
+		
+		<!-- Test a needsAuthorization message that should succeed -->
+		<event-handler name="test.security.loginSuccess" type="test.securityEvent">
+			<broadcasts>
+				<message name="mockValues">
+					<arguments name="loginName" value="peter" />
+                    <arguments name="password" value="oleometer" />
+				</message>
+				<message name="needsAuthentication" />
+			</broadcasts>
+			<results>
+				<result do="test.layout.default" />
+			</results>
+            <views>
+                <view name="body" template="dev/results.cfm">
+                    <value name="ResultName" value="LoginToken" />
+                </view>
+            </views>
+		</event-handler>	
+
+        <!-- Test a needsAuthentication message that should fail due to a missing login name -->
+        <event-handler name="test.security.loginFailed.loginNameMissing" type="test.securityEvent">
+            <broadcasts>
+                <message name="mockValues">
+                    <arguments name="loginName" value="" />
+                    <arguments name="password" value="fooBar" />
+                </message>
+                <message name="needsAuthentication" />
+            </broadcasts>
+            <results>
+                <result do="test.layout.default" />
+            </results>
+            <views>
+                <view name="body" template="dev/results.cfm">
+                    <value name="ResultName" value="LoginValidation" />
+                </view>
+            </views>
+        </event-handler>    
+
+        <!-- Test a needsAuthentication message that should fail due to invalid credentials -->
+        <event-handler name="test.security.loginFailed.badCredentials" type="test.securityEvent">
+            <broadcasts>
+                <message name="mockValues">
+                    <arguments name="loginName" value="paul" />
+                    <arguments name="password" value="fooBar" />
+                </message>
+                <message name="needsAuthentication" />
+            </broadcasts>
+            <results>
+                <result do="test.layout.default" />
+            </results>
+            <views>
+                <view name="body" template="dev/results.cfm">
+                    <value name="ResultName" value="LoginValidation" />
+                </view>
+            </views>
+        </event-handler>
+
+        <!-- Test a needsAuthorization message that should fail due to not being logged in -->
+        <event-handler name="test.security.notLoggedIn" type="test.securityEvent">
+            <broadcasts>
+                <message name="needsLogout" />
+                <message name="needsAuthorization" />
+            </broadcasts>
+            <results>
+                <result do="test.layout.default" />
+            </results>
+            <views>
+            </views>
+        </event-handler>    
+
+        <event-handler name="test.security.notAuthorized" type="test.securityEvent">
+            <broadcasts>
+                <message name="mockValues">
+                    <arguments name="loginName" value="peter" />
+                    <arguments name="password" value="oleometer" />
+                </message>
+                <message name="needsAuthentication" />
+                <message name="needsAuthorization">
+                	<arguments name="authorizedRoles" value="manager" />
+                </message>
+            </broadcasts>
+            <results>
+                <result do="test.layout.default" />
+            </results>
+            <views>
+            </views>
+        </event-handler>    
+
+        <event-handler name="test.security.authorized" type="test.securityEvent">
+            <broadcasts>
+                <message name="mockValues">
+                    <arguments name="loginName" value="quentin" />
+                    <arguments name="password" value="paragon" />
+                </message>
+                <message name="needsAuthorization">
+                    <arguments name="authorizedRoles" value="manager" />
+                </message>
+            </broadcasts>
+            <results>
+                <result do="test.layout.default" />
+            </results>
+            <views>
+            </views>
+        </event-handler>    
+
+	    <!-- Test layouts -->
+	
+	    <event-handler name="test.layout.default" access="private">
+	        <views>
+	            <!-- Add re-init link for debugging -->
+	            <view name="bottomNav" template="dev/initLink.cfm" />
+	            <view name="main" template="templates/main.cfm" />
+	        </views>
+	    </event-handler>
+
+    </event-handlers>
+	
+</modelglue>

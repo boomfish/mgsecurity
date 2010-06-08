@@ -1,0 +1,4 @@
+peter:oleometer:user
+quentin:paragon:manager
+root:diogenes:admin
+selenium:4s^2.4p^4:user

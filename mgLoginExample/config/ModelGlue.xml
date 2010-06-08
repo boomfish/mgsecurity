@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Top-level ModelGlue.xml file for application -->
+<modelglue>
+
+    <!-- Add-on modules -->
+
+    <!-- Security module -->
+    <module location="config/security/ModelGlue.xml" />
+
+    <!-- Development modules -->
+	
+	<!-- Mock events are mostly for front-end development -->
+    <module location="config/mocks/ModelGlue.xml" />
+	
+	<!-- Test events are mostly for back-end development -->
+    <module location="config/tests/ModelGlue.xml" />
+
+
+	<controllers>
+		<!-- Request controller handles some key events in the standard request cycle -->
+		<controller id="RequestController" type="mgLoginExample.controller.RequestController">
+           <message-listener message="onRequestStart" />
+           <message-listener message="onQueueComplete" />
+		   <message-listener message="onRequestEnd" />
+		</controller>
+		
+	</controllers>
+			
+	<event-handlers>
+		
+		<!-- A homepage for your application. -->
+		<event-handler name="page.index">
+			<broadcasts />
+			<results>
+				<result do="layout.default" />
+			</results>
+			<views>
+				<view name="body" template="pages/index.cfm" />
+			</views>
+		</event-handler>
+	
+	    <!-- Secured page events -->
+		
+	    <event-handler name="page.welcome" type="generalSecuredEvent">
+	        <broadcasts />
+	        <results>
+	            <result do="layout.default" />
+	        </results>
+	        <views>
+	            <view name="topNav" template="nav/topWelcome.cfm" />
+	            <view name="body"   template="pages/index.cfm" />
+	        </views>
+	    </event-handler>
+	
+	    <event-handler name="page.manager" type="managerSecuredEvent">
+	        <broadcasts />
+	        <results>
+	            <result do="layout.default" />
+	        </results>
+	        <views>
+	            <view name="body" template="pages/manager.cfm" />
+	        </views>
+	    </event-handler>
+	
+	    <event-handler name="page.admin" type="adminSecuredEvent">
+	        <broadcasts />
+	        <results>
+	            <result do="layout.default" />
+	        </results>
+	        <views>
+	            <view name="body" template="pages/admin.cfm" />
+	        </views>
+	    </event-handler>
+		
+		<!-- Layouts -->
+	
+	    <event-handler name="layout.default" access="private">
+	        <views>
+	            <view name="bottomNav" template="nav/bottomDefault.cfm">
+	            	<value overwrite="true" name="xe.home"    value="page.index" />
+	                <value overwrite="true" name="xe.manager" value="page.manager" />
+	                <value overwrite="true" name="xe.admin"   value="page.admin" />
+	                <value overwrite="true" name="xe.logout"  value="security.logout" />
+	                <value overwrite="true" name="xe.login"   value="security.loginForm" />
+	            </view>
+	            <view name="main" template="templates/main.cfm" />
+	        </views>
+	    </event-handler>
+	
+	   <event-handler name="layout.plain" access="private">
+	        <views>
+	            <view name="main" template="templates/main.cfm" />
+	        </views>
+	    </event-handler>
+	
+	    <!-- Built-in events -->
+	
+		<event-handler name="page.error" access="private" >
+			<broadcasts />
+			<results>
+				<result do="layout.plain" />
+			</results>
+			<views>
+				<view name="body" template="pages/exception.cfm" />
+			</views>
+		</event-handler>
+	
+		<event-handler name="page.missing" access="private" >
+			<broadcasts />
+			<results>
+				<result do="layout.plain" />
+			</results>
+			<views>
+				<view name="body" template="pages/missingEvent.cfm" />
+			</views>
+		</event-handler>
+		
+		
+	</event-handlers>
+	
+</modelglue>
+

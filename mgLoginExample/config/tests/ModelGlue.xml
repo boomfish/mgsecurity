@@ -24,7 +24,7 @@
 		<!-- Test a needsAuthorization message that should succeed -->
 		<event-handler name="test.security.loginSuccess" type="test.securityEvent">
 			<broadcasts>
-				<message name="mockValues">
+				<message name="generateValues">
 					<arguments name="loginName" value="peter" />
                     <arguments name="password" value="oleometer" />
 				</message>
@@ -43,7 +43,7 @@
         <!-- Test a needsAuthentication message that should fail due to a missing login name -->
         <event-handler name="test.security.loginFailed.loginNameMissing" type="test.securityEvent">
             <broadcasts>
-                <message name="mockValues">
+                <message name="generateValues">
                     <arguments name="loginName" value="" />
                     <arguments name="password" value="fooBar" />
                 </message>
@@ -62,7 +62,7 @@
         <!-- Test a needsAuthentication message that should fail due to invalid credentials -->
         <event-handler name="test.security.loginFailed.badCredentials" type="test.securityEvent">
             <broadcasts>
-                <message name="mockValues">
+                <message name="generateValues">
                     <arguments name="loginName" value="paul" />
                     <arguments name="password" value="fooBar" />
                 </message>
@@ -93,7 +93,7 @@
 
         <event-handler name="test.security.notAuthorized" type="test.securityEvent">
             <broadcasts>
-                <message name="mockValues">
+                <message name="generateValues">
                     <arguments name="loginName" value="peter" />
                     <arguments name="password" value="oleometer" />
                 </message>
@@ -111,7 +111,7 @@
 
         <event-handler name="test.security.authorized" type="test.securityEvent">
             <broadcasts>
-                <message name="mockValues">
+                <message name="generateValues">
                     <arguments name="loginName" value="quentin" />
                     <arguments name="password" value="paragon" />
                 </message>

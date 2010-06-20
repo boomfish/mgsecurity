@@ -4,9 +4,9 @@
 
 	<controllers>
 		<!-- Mocking controller generates mock data for views -->
-        <controller id="MockingController" type="mgLoginExample.controller.dev.MockingController">
-           <message-listener message="mockValidation" />
-           <message-listener message="mockValues" />
+        <controller id="EventDataGenerator" type="mgLoginExample.controller.dev.EventDataGenerator">
+           <message-listener message="generateValidation" />
+           <message-listener message="generateValues" />
         </controller>
 	</controllers>
 			
@@ -75,7 +75,7 @@
         <!-- Event to simulate a login failure from a missing login name -->
         <event-handler name="mock.security.loginFailed.loginNameMissing">
             <broadcasts>
-                <message name="mockValidation">
+                <message name="generateValidation">
                 	<argument name="validation" value="LoginValidation" />
                     <argument name="loginName" value="The Login name field is required but was not provided." />
             	</message>
@@ -89,11 +89,11 @@
         <!-- Event to simulate a login failure from invalid credentials -->
         <event-handler name="mock.security.loginFailed.badCredentials">
             <broadcasts>
-                <message name="mockValues">
+                <message name="generateValues">
                     <argument name="loginName" value="paul" />
                     <argument name="password" value="foobar" />
                 </message>
-                <message name="mockValidation">
+                <message name="generateValidation">
                     <argument name="validation" value="LoginValidation" />
                     <argument name="password" value="Your login name and/or password is incorrect." />
                 </message>
